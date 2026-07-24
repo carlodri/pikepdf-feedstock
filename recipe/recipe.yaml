@@ -17,6 +17,7 @@ build:
   script:
     - if: win
       then:
+        - set "CMAKE_GENERATOR=Ninja"
         - set "INCLUDE=%LIBRARY_PREFIX%\include;%INCLUDE%"
         - set "LIB=%LIBRARY_PREFIX%\lib;%LIB%"
         - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
