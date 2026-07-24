@@ -14,29 +14,32 @@ source:
 
 build:
   number: 0
-  script: ${{ PYTHON }} -m pip install . -vv
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   build:
     - ${{ stdlib("c") }}
     - ${{ compiler("c") }}
     - ${{ compiler("cxx") }}
+    - cmake
+    - ninja
     - if: build_platform != target_platform
       then:
         - python
         - cross-python_${{ target_platform }}
+        - nanobind >=2.0
   host:
     - python
     - pip
-    - setuptools >=77.0.3
-    - wheel >=0.37
-    - pybind11 >=3
-    - qpdf >=11.9.0
+    - scikit-build-core >=0.10
+    - nanobind >=2.0
+    - qpdf >=12.2.0
   run:
-    - python
+    - python >=3.10
     - pillow >=10.0.1
     - lxml >=4.8
     - packaging
+
 tests:
   - python:
       imports:
