@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pikepdf
-  version: "10.5.1"
+  version: 10.7.2
 
 package:
   name: ${{ name|lower }}
@@ -10,32 +10,48 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
-  sha256: ffa6c7d0b77deb3af9735e0b0cae177c897431e10d342bb171b62e5527a622b7
+  sha256: cddbe05a2398b19d99fc24aaab563695d05025a416f02deb4c2ac0a0068e3f65
 
 build:
-  number: 1
-  script: ${{ PYTHON }} -m pip install . -vv
+  number: 0
+  script:
+    - if: win
+      then:
+        - set "CMAKE_GENERATOR=Ninja"
+        - set CMAKE_GENERATOR_PLATFORM=
+        - set CMAKE_GENERATOR_TOOLSET=
+        - set "INCLUDE=%LIBRARY_PREFIX%\include;%INCLUDE%"
+        - set "LIB=%LIBRARY_PREFIX%\lib;%LIB%"
+        - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+      else:
+        - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   build:
     - ${{ stdlib("c") }}
     - ${{ compiler("c") }}
     - ${{ compiler("cxx") }}
+    - cmake
+    - if: unix
+      then:
+        - make
+    - if: win
+      then:
+        - ninja
     - if: build_platform != target_platform
-      then: python
-    - if: build_platform != target_platform
-      then: cross-python_${{ target_platform }}
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - nanobind >=2.0
   host:
     - python
     - pip
-    - setuptools >=77.0.3
-    - wheel >=0.37
-    - pybind11 >=3
-    - qpdf >=11.9.0
+    - scikit-build-core >=0.10
+    - nanobind >=2.0
+    - qpdf >=12.2.0
   run:
     - python
     - pillow >=10.0.1
-    - deprecated
     - lxml >=4.8
     - packaging
 
