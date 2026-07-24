@@ -22,7 +22,12 @@ requirements:
     - ${{ compiler("c") }}
     - ${{ compiler("cxx") }}
     - cmake
-    - ninja
+    - if: unix
+      then:
+        - make
+    - if: win
+      then:
+        - ninja
     - if: build_platform != target_platform
       then:
         - python
