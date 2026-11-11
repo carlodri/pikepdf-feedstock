@@ -15,16 +15,16 @@ source:
 build:
   number: 1
   script:
-    - if: win
-      then:
-        - set "CMAKE_GENERATOR=Ninja"
-        - set CMAKE_GENERATOR_PLATFORM=
-        - set CMAKE_GENERATOR_TOOLSET=
-        - set "INCLUDE=%LIBRARY_PREFIX%\include;%INCLUDE%"
-        - set "LIB=%LIBRARY_PREFIX%\lib;%LIB%"
-        - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-      else:
-        - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    env:
+      CMAKE_GENERATOR: Ninja
+    content:
+      - if: win
+        then:
+          - set CMAKE_GENERATOR_PLATFORM=
+          - set CMAKE_GENERATOR_TOOLSET=
+          - set "INCLUDE=%LIBRARY_PREFIX%\include;%INCLUDE%"
+          - set "LIB=%LIBRARY_PREFIX%\lib;%LIB%"
+      - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   build:
@@ -32,12 +32,7 @@ requirements:
     - ${{ compiler("c") }}
     - ${{ compiler("cxx") }}
     - cmake
-    - if: unix
-      then:
-        - make
-    - if: win
-      then:
-        - ninja
+    - ninja
     - if: build_platform != target_platform
       then:
         - python
@@ -63,7 +58,13 @@ tests:
   - python:
       imports:
         - pikepdf
+        - pikepdf.pdfa
       pip_check: true
+  - script:
+      - python -c "from pikepdf.pdfa import _deps; _deps.require()"
+    requirements:
+      run:
+        - python
 
 about:
   license: MPL-2.0
