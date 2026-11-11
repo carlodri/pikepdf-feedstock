@@ -13,7 +13,7 @@ source:
   sha256: d9541429f079f7838f2856fea5c2ad165885693cdb36894e73d40d1b845d2e11
 
 build:
-  number: 0
+  number: 1
   script:
     - if: win
       then:
@@ -54,6 +54,10 @@ requirements:
     - pillow >=10.0.1
     - lxml >=4.8
     - packaging
+    # pdfa extra
+    - jsonschema >=4.18
+    - referencing
+    - fonttools >=4.40
 
 tests:
   - python:
